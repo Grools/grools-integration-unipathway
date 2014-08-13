@@ -1,0 +1,93 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'nexus'
+
+sourceCompatibility     = 1.8
+targetCompatibility     = 1.8
+version                 = '0.1.0-SNAPSHOT'
+group                   = 'fr.cea.ig.external.unipathway.client.http'
+def projectName         = 'grools-integration-unipathway'
+def projectDescription  = 'grools-integration-unipathway is a project which aim to generate grools rule from unipathway website'
+def projectUrl          = 'https://github.com/institut-de-genomique/grools-integration-unipathway'
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
+dependencies{
+    compile     fileTree(dir: 'libs', include: '*.jar')
+    compile     group: 'fr.cea.ig.file',                            name: 'ig-file',                version: '0.1.0-SNAPSHOT'
+    compile     group: 'fr.cea.ig.microscope.client.rest',          name: 'microscope-client-rest', version: '0.1.0-SNAPSHOT'
+    compile     group: 'fr.cea.ig.external.unipathway.client.http', name: 'unipathway-client-http', version: '0.1.0-SNAPSHOT'
+    compile     group: 'com.lexicalscope.jewelcli',                 name: 'jewelcli',               version: '0.8.9'
+    compile     group: 'org.jsoup',                                 name: 'jsoup',                  version: '1.7.3'
+    compile     group: 'org.slf4j',                                 name: 'slf4j-api',              version: '1.7.7'
+    testCompile group: 'junit',                                     name: 'junit',                  version: '4.11'
+}
+
+jar {
+    manifest.attributes provider: 'genoscope'
+    manifest.attributes 'Created-By': 'LABGeM'
+    manifest.attributes 'Product-Name': projectName
+    baseName = projectName
+}
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "https://gsphere.genoscope.cns.fr/nexus/content/groups/public"
+    }
+}
+
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7.1'
+    }
+}
+
+modifyPom {
+    project {
+        name            projectName
+        description     projectDescription
+        url             projectUrl
+        inceptionYear   '2014'
+
+        scm {
+            url 'https://github.com/institut-de-genomique/grools-integration-unipathway'
+            connection 'scm:https://github.com/institut-de-genomique/grools-integration-unipathway.git'
+            developerConnection 'scm:git@github.com:institut-de-genomique/grools-integration-unipathway.git'
+        }
+
+        licenses {
+            license {
+                name 'CeCILL-C'
+                url 'http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'jmercier'
+                name 'Jonathan MERCIER'
+                email 'jmercier@genoscope.cns.fr'
+            }
+        }
+    }
+}
+
+nexus {
+    attachSources           = false
+    attachTests             = true
+    attachJavadoc           = false
+    sign                    = true
+    repositoryUrl           = 'https://gsphere.genoscope.cns.fr/nexus/content/repositories/snapshots/release/'
+    snapshotRepositoryUrl   = 'https://gsphere.genoscope.cns.fr/nexus/content/repositories/snapshots/'
+}
